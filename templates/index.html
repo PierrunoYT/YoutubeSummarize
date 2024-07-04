@@ -123,7 +123,13 @@
                         progressBar.style.width = percentCompleted + '%';
                     }
                 });
-                summaryResult.innerHTML = `<p><strong>Summary:</strong> ${response.data.summary}</p>`;
+                const summaryPoints = response.data.summary.split('\n').filter(point => point.trim() !== '');
+                let summaryHtml = '<ol>';
+                summaryPoints.forEach(point => {
+                    summaryHtml += `<li>${point.replace(/^\d+\.\s*/, '')}</li>`;
+                });
+                summaryHtml += '</ol>';
+                summaryResult.innerHTML = `<strong>${translate ? 'Zusammenfassung' : 'Summary'}:</strong>${summaryHtml}`;
                 progressBar.style.width = '100%';
             } catch (error) {
                 console.error('Error:', error);
