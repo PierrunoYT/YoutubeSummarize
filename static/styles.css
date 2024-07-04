@@ -320,65 +320,53 @@ button:hover {
 
 .toggle-label {
     display: inline-block;
-    width: 70px;
-    height: 34px;
-    background-color: var(--primary-color);
-    border-radius: 17px;
+    width: 60px;
+    height: 30px;
     position: relative;
     cursor: pointer;
+}
+
+.toggle-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e0e0e0;
+    border-radius: 15px;
     transition: background-color 0.3s ease;
 }
 
-.toggle-icon {
-    display: block;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: white;
+.toggle-indicator {
     position: absolute;
     top: 2px;
     left: 2px;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    width: 26px;
+    height: 26px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-icon::before {
     content: '🌙';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
+    font-size: 16px;
 }
 
-input[type="checkbox"]:checked + .toggle-label {
+input[type="checkbox"]:checked + .toggle-label .toggle-track {
     background-color: var(--primary-color);
 }
 
-input[type="checkbox"]:checked + .toggle-label .toggle-icon {
-    transform: translateX(36px);
-    background-color: white;
+input[type="checkbox"]:checked + .toggle-label .toggle-indicator {
+    transform: translateX(30px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
     content: '☀️';
-}
-
-/* Adjustments for better fitting */
-.toggle-label {
-    box-sizing: border-box;
-    padding: 2px;
-}
-
-.toggle-icon {
-    top: 50%;
-    left: 2px;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease;
-}
-
-input[type="checkbox"]:checked + .toggle-label .toggle-icon {
-    transform: translate(36px, -50%);
 }
 
 #chat-messages {
