@@ -361,6 +361,10 @@ button:hover {
 .toggle-icon::before {
     content: '☀️';
     font-size: 16px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 input[type="checkbox"]:checked + .toggle-label {
