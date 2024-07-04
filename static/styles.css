@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;700&display=swap');
 
 :root {
     --primary-color: #4285F4;
@@ -12,20 +12,20 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    font-size: 16px;
 }
 
-h1, h2 {
-    font-family: 'Montserrat', sans-serif;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
     color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 }
 
 .container {
@@ -155,11 +155,11 @@ button:hover {
 
 .ai-response h3 {
     color: var(--primary-color);
-    margin-top: 15px;
+    margin-top: 20px;
     margin-bottom: 15px;
     border-bottom: 2px solid var(--secondary-color);
     padding-bottom: 5px;
-    font-size: 1.4em;
+    font-size: 1.5em;
 }
 
 .ai-response .key-points {
@@ -174,7 +174,7 @@ button:hover {
     color: var(--primary-color);
     margin-top: 0;
     margin-bottom: 15px;
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 .ai-response .key-points ul {
@@ -184,10 +184,10 @@ button:hover {
 }
 
 .ai-response .key-points li {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     position: relative;
     padding-left: 20px;
-    font-size: 1em;
+    font-size: 1.1em;
 }
 
 .ai-response .key-points li::before {
@@ -200,8 +200,8 @@ button:hover {
 }
 
 .ai-response p {
-    line-height: 1.6;
-    font-size: 1em;
+    line-height: 1.7;
+    font-size: 1.1em;
 }
 
 .ai-response .timestamp {
