@@ -309,48 +309,40 @@ button:hover {
 }
 
 .dark-mode-toggle {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: 30px;
 }
 
 .dark-mode-toggle input[type="checkbox"] {
-    display: none;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 .toggle-label {
-    display: inline-block;
-    width: 60px;
-    height: 30px;
-    position: relative;
-    cursor: pointer;
-}
-
-.toggle-track {
     position: absolute;
+    cursor: pointer;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e0e0e0;
-    border-radius: 15px;
-    transition: background-color 0.3s ease;
+    background-color: #4285F4;
+    transition: .4s;
+    border-radius: 34px;
 }
 
 .toggle-indicator {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 26px;
+    content: "";
     height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 2px;
     background-color: white;
+    transition: .4s;
     border-radius: 50%;
-    transition: transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
 }
 
 .toggle-icon {
@@ -358,56 +350,30 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 26px;
-    height: 26px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: transform 0.3s ease;
-    overflow: visible;
-}
-
-.toggle-icon::before,
-.toggle-icon::after {
-    content: '';
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    width: 18px;
+    height: 18px;
+    transition: .4s;
 }
 
 .toggle-icon::before {
-    background-color: #FFD700; /* Sun color */
-    box-shadow: 0 0 5px #FFD700;
-    opacity: 1;
-    transform: translateX(-2px);
+    content: '☀️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
 }
 
-.toggle-icon::after {
-    background-color: #F4A460; /* Moon color */
-    box-shadow: 0 0 5px #F4A460;
-    opacity: 0;
-    transform: translateX(2px);
-}
-
-input[type="checkbox"]:checked + .toggle-label .toggle-track {
-    background-color: var(--primary-color);
+input[type="checkbox"]:checked + .toggle-label {
+    background-color: #1a73e8;
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-indicator {
-    transform: translateX(15px);
+    transform: translateX(26px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
-    opacity: 0;
-    transform: translateX(0);
-}
-
-input[type="checkbox"]:checked + .toggle-label .toggle-icon::after {
-    opacity: 1;
-    transform: translateX(0);
+    content: '🌙';
 }
 
 #chat-messages {
