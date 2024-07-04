@@ -102,8 +102,8 @@ def summarize_video():
             json={
                 "model": "anthropic/claude-3.5-sonnet",
                 "messages": [
-                    {"role": "system", "content": "You are a helpful assistant that provides detailed summaries of YouTube video transcripts. Your summaries should be comprehensive and cover all major points discussed in the video. Present the summary as a numbered list of key points."},
-                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should be thorough and cover all main topics and ideas presented in the video. Present the summary as a numbered list of key points:\n\n{full_text}"}
+                    {"role": "system", "content": "You are a helpful assistant that provides detailed summaries of YouTube video transcripts. Your summaries should be comprehensive and cover all major points discussed in the video in a flowing text format."},
+                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should be thorough and cover all main topics and ideas presented in the video in a coherent, flowing text format:\n\n{full_text}"}
                 ]
             }
         )
