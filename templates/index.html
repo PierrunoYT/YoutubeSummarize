@@ -11,6 +11,13 @@
 <body>
     <div class="container">
         <h1>YouTube Search and Analysis</h1>
+        <div id="main-search">
+            <input type="text" id="main-video-url" placeholder="Paste YouTube URL here...">
+            <div class="main-buttons">
+                <button onclick="summarizeVideo(false)" class="cta-button">Summarize Video</button>
+                <button onclick="startVideoChat()" class="cta-button">Start Chat</button>
+            </div>
+        </div>
         <div class="two-column-layout">
             <div class="left-column">
                 <div id="video-container">
@@ -24,14 +31,11 @@
             <div class="right-column">
                 <div id="summary-container">
                     <h2>YouTube Video Summary</h2>
-                    <textarea id="video-url" placeholder="Paste YouTube URL..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
-                    <button onclick="summarizeVideo(false)">Summarize</button>
                     <button onclick="summarizeVideo(true)">Summarize in German</button>
                     <div id="summary-result"></div>
                 </div>
                 <div id="video-chat-container">
                     <h2>Chat with YouTube Video</h2>
-                    <textarea id="video-chat-url" placeholder="Paste YouTube URL..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
                     <textarea id="video-chat-question" placeholder="Ask a question about the video..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
                     <button onclick="askVideoQuestion(false)">Ask Question</button>
                     <button onclick="askVideoQuestion(true)">Ask Question (German)</button>
@@ -54,6 +58,12 @@
                 console.error('Error:', error);
                 displayVideos([{ title: 'Error: Failed to search videos' }]);
             }
+        }
+
+        function startVideoChat() {
+            const videoUrl = document.getElementById('main-video-url').value;
+            document.getElementById('video-chat-container').scrollIntoView({ behavior: 'smooth' });
+            // You can add more functionality here, like automatically filling the video URL in the chat section
         }
 
         function displayVideos(videos) {
