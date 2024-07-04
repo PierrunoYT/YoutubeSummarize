@@ -124,7 +124,7 @@
                     }
                 });
                 const { summary, key_points } = response.data;
-                let summaryHtml = `<h3>${translate ? 'Zusammenfassung' : 'Summary'}:</h3><p>${summary}</p>`;
+                let summaryHtml = `<h3>${translate ? 'Fließende Textzusammenfassung' : 'Flowing Text Summary'}:</h3><p>${summary}</p>`;
                 summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
                 key_points.split('\n').forEach(point => {
                     if (point.trim() !== '') {
