@@ -358,21 +358,22 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
     transition: transform 0.3s ease;
+    overflow: visible;
 }
 
 .toggle-icon::before,
 .toggle-icon::after {
     content: '';
     position: absolute;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -380,15 +381,15 @@ button:hover {
 .toggle-icon::before {
     background-color: #FFD700;
     box-shadow: 0 0 5px #FFD700;
-    opacity: 0;
-    transform: translateX(-8px);
+    opacity: 1;
+    transform: translateX(-11px);
 }
 
 .toggle-icon::after {
     background-color: #F4A460;
     box-shadow: 0 0 5px #F4A460;
     opacity: 1;
-    transform: translateX(8px);
+    transform: translateX(11px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-track {
