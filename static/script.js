@@ -6,7 +6,7 @@ function toggleDarkMode() {
 }
 
 // Check for saved dark mode preference and initialize the toggle
-document.addEventListener('DOMContentLoaded', function() {
+function initializeDarkMode() {
     const darkModeToggle = document.getElementById('darkModeToggle');
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
@@ -15,12 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listener to the toggle
     darkModeToggle.addEventListener('change', toggleDarkMode);
-});
+}
 
 // Apply dark mode immediately if it's set in localStorage
 if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
 }
+
+// Call initializeDarkMode when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeDarkMode);
 
 function showLoading(element) {
     element.classList.add('loading');
