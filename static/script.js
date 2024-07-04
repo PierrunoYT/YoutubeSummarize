@@ -17,6 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
     darkModeToggle.addEventListener('change', toggleDarkMode);
 });
 
+// Apply dark mode immediately if it's set in localStorage
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+}
+
 function showLoading(element) {
     element.classList.add('loading');
 }

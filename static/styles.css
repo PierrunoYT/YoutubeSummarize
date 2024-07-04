@@ -11,7 +11,7 @@
     --gradient-end: #64B5F6;
 }
 
-.dark-mode {
+body.dark-mode {
     --primary-color: #64B5F6;
     --secondary-color: #FF4444;
     --background-color: #121212;
