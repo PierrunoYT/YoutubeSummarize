@@ -123,7 +123,10 @@
                         progressBar.style.width = percentCompleted + '%';
                     }
                 });
-                summaryResult.innerHTML = `<strong>${translate ? 'Zusammenfassung' : 'Summary'}:</strong><p>${response.data.summary}</p>`;
+                const { overview, key_points } = response.data;
+                let summaryHtml = `<h3>${translate ? 'Überblick' : 'Overview'}:</h3><p>${overview}</p>`;
+                summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3>${key_points}`;
+                summaryResult.innerHTML = summaryHtml;
                 progressBar.style.width = '100%';
             } catch (error) {
                 console.error('Error:', error);

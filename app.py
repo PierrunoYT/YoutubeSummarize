@@ -102,17 +102,25 @@ def summarize_video():
             json={
                 "model": "anthropic/claude-3.5-sonnet",
                 "messages": [
-                    {"role": "system", "content": "You are a helpful assistant that provides detailed summaries of YouTube video transcripts. Your summaries should be comprehensive and cover all major points discussed in the video in a flowing text format."},
-                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should be thorough and cover all main topics and ideas presented in the video in a coherent, flowing text format:\n\n{full_text}"}
+                    {"role": "system", "content": "You are a helpful assistant that provides detailed summaries of YouTube video transcripts. Your summaries should be comprehensive and cover all major points discussed in the video. Provide a brief overview followed by a list of key points."},
+                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should include:\n1. A brief overview (2-3 sentences) of the main topic.\n2. A list of key points covering the main ideas and topics presented in the video.\n\nHere's the transcript:\n\n{full_text}"}
                 ]
             }
         )
         
         if response.status_code == 200:
-            summary = response.json()['choices'][0]['message']['content']
+            content = response.json()['choices'][0]['message']['content']
+            
+            # Split the content into overview and key points
+            parts = content.split('\n', 1)
+            overview = parts[0].strip()
+            key_points = parts[1].strip() if len(parts) > 1 else ""
+            
             if translate:
-                summary = translate_to_german(summary)
-            return jsonify({"summary": summary})
+                overview = translate_to_german(overview)
+                key_points = translate_to_german(key_points)
+            
+            return jsonify({"overview": overview, "key_points": key_points})
         else:
             app.logger.error(f"OpenRouter API error: {response.status_code} - {response.text}")
             return jsonify({"error": "Failed to get summary from OpenRouter"}), 500
