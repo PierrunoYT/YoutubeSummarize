@@ -128,7 +128,9 @@
                 summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
                 key_points.split('\n').forEach(point => {
                     if (point.trim() !== '') {
-                        summaryHtml += `<li>${point.trim()}</li>`;
+                        // Remove the leading dash if present
+                        let cleanPoint = point.trim().replace(/^[-•]\s*/, '');
+                        summaryHtml += `<li>${cleanPoint}</li>`;
                     }
                 });
                 summaryHtml += '</ul>';
