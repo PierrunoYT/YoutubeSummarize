@@ -75,6 +75,10 @@
             toggleSummaryChat();
             const videoUrl = document.getElementById('main-video-url').value;
             document.getElementById('video-chat-container').scrollIntoView({ behavior: 'smooth' });
+            // Clear previous chat messages
+            document.getElementById('chat-messages').innerHTML = '';
+            // Focus on the question input
+            document.getElementById('video-chat-question').focus();
         }
 
         function displayVideos(videos) {
