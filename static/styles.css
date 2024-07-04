@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;700&display=swap');
-@import 'dark-mode.css';
-@import 'layout.css';
-@import 'components.css';
-@import 'responsive.css';
+@import 'styles/dark-mode.css';
+@import 'styles/layout.css';
+@import 'styles/components.css';
+@import 'styles/responsive.css';
+@import 'styles/main.css';
 
 :root {
     --primary-color: #4285F4;
