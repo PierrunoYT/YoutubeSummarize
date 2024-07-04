@@ -379,17 +379,17 @@ button:hover {
 }
 
 .toggle-icon::before {
-    background-color: #FFD700;
+    background-color: #FFD700; /* Sun color */
     box-shadow: 0 0 5px #FFD700;
     opacity: 1;
-    transform: translateX(-11px);
+    transform: translateX(11px);
 }
 
 .toggle-icon::after {
-    background-color: #F4A460;
+    background-color: #F4A460; /* Moon color */
     box-shadow: 0 0 5px #F4A460;
-    opacity: 1;
-    transform: translateX(11px);
+    opacity: 0;
+    transform: translateX(-11px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-track {
@@ -401,13 +401,13 @@ input[type="checkbox"]:checked + .toggle-label .toggle-indicator {
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
-    opacity: 1;
-    transform: translateX(8px);
+    opacity: 0;
+    transform: translateX(-8px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::after {
-    opacity: 0;
-    transform: translateX(-8px);
+    opacity: 1;
+    transform: translateX(8px);
 }
 
 #chat-messages {
