@@ -1,0 +1,229 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@700&display=swap');
+
+:root {
+    --primary-color: #4285F4;
+    --secondary-color: #FF0000;
+    --background-color: #FFFFFF;
+    --text-color: #333333;
+    --container-bg: #FFFFFF;
+    --accent-color: #FF0000;
+    --gradient-start: #4285F4;
+    --gradient-end: #64B5F6;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+h1, h2 {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}
+
+.two-column-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#video-container, #summary-container, #video-chat-container {
+    background-color: var(--container-bg);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 300px;
+}
+
+#video-results, #summary-result, #video-chat-result {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+#video-results, #summary-result, #video-chat-result {
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+textarea, button {
+    width: 100%;
+    max-width: 100%;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+textarea {
+    min-height: 24px;
+    resize: vertical;
+    line-height: 1.2;
+    overflow-y: hidden;
+}
+
+button {
+    padding: 6px 12px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+#video-container, #summary-container, #video-chat-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#video-search, #video-url, #video-chat-url, #video-chat-question {
+    flex: 1;
+}
+
+button:hover {
+    background-color: var(--primary-color);
+}
+
+#video-results div {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#video-results img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+#video-results a {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.ai-response {
+    background-color: #f3f3f3;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ai-response h3 {
+    color: var(--primary-color);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 5px;
+    font-size: 1.4em;
+}
+
+.ai-response .key-points {
+    background-color: #e8eaf6;
+    border-left: 4px solid var(--secondary-color);
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 0 10px 10px 0;
+}
+
+.ai-response .key-points h4 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.ai-response .key-points ul {
+    padding-left: 20px;
+    list-style-type: none;
+    margin-bottom: 0;
+}
+
+.ai-response .key-points li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+    font-size: 1em;
+}
+
+.ai-response .key-points li::before {
+    content: "➤";
+    color: var(--secondary-color);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.ai-response p {
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+.ai-response .timestamp {
+    font-style: italic;
+    color: #757575;
+    font-size: 0.9em;
+    margin-top: 10px;
+    padding: 5px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+    .two-column-layout {
+        flex-direction: column;
+    }
+
+    .left-column, .right-column {
+        width: 100%;
+    }
+
+    input[type="text"], button {
+        width: 100%;
+    }
+}

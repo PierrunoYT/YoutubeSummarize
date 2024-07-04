@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Search and Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Search and Analysis</h1>
+        <div class="two-column-layout">
+            <div class="left-column">
+                <div id="video-container">
+                    <h2>YouTube Search</h2>
+                    <textarea id="video-search" placeholder="Search for videos..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button onclick="searchVideos()">Search</button>
+                    <div id="video-results"></div>
+                </div>
+                <div id="video-player"></div>
+            </div>
+            <div class="right-column">
+                <div id="summary-container">
+                    <h2>YouTube Video Summary</h2>
+                    <textarea id="video-url" placeholder="Paste YouTube URL..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button onclick="summarizeVideo(false)">Summarize</button>
+                    <button onclick="summarizeVideo(true)">Summarize in German</button>
+                    <div id="summary-result"></div>
+                </div>
+                <div id="video-chat-container">
+                    <h2>Chat with YouTube Video</h2>
+                    <textarea id="video-chat-url" placeholder="Paste YouTube URL..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <textarea id="video-chat-question" placeholder="Ask a question about the video..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button onclick="askVideoQuestion(false)">Ask Question</button>
+                    <button onclick="askVideoQuestion(true)">Ask Question (German)</button>
+                    <div id="video-chat-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function searchVideos() {
+            const input = document.getElementById('video-search');
+            const query = input.value;
+            input.value = '';
+
+            try {
+                const response = await axios.post('/search_videos', { query: query });
+                displayVideos(response.data);
+            } catch (error) {
+                console.error('Error:', error);
+                displayVideos([{ title: 'Error: Failed to search videos' }]);
+            }
+        }
+
+        function displayVideos(videos) {
+            const videoResults = document.getElementById('video-results');
+            videoResults.innerHTML = '';
+
+            videos.forEach(video => {
+                const videoElement = document.createElement('div');
+                videoElement.innerHTML = `
+                    <h3>${video.title}</h3>
+                    <img src="${video.thumbnail}" alt="${video.title}">
+                    <p>${video.description}</p>
+                    <a href="https://www.youtube.com/watch?v=${video.video_id}" target="_blank">Watch Video</a>
+                    <button onclick="fillSummarizeBox('https://www.youtube.com/watch?v=${video.video_id}')">Summarize</button>
+                    <button onclick="fillQuestionBox('https://www.youtube.com/watch?v=${video.video_id}')">Ask Question</button>
+                `;
+                videoResults.appendChild(videoElement);
+            });
+        }
+
+        async function summarizeVideo(translate) {
+            const input = document.getElementById('video-url');
+            const videoUrl = input.value;
+            input.value = '';
+
+            const summaryResult = document.getElementById('summary-result');
+            summaryResult.innerHTML = 'Summarizing video...';
+
+            try {
+                const response = await axios.post('/summarize_video', { video_url: videoUrl, translate: translate });
+                summaryResult.innerHTML = `<p><strong>Summary:</strong> ${response.data.summary}</p>`;
+            } catch (error) {
+                console.error('Error:', error);
+                summaryResult.innerHTML = 'Error: Failed to summarize video';
+            }
+        }
+
+        async function askVideoQuestion(translate) {
+            const videoUrl = document.getElementById('video-chat-url').value;
+            const question = document.getElementById('video-chat-question').value;
+            const resultDiv = document.getElementById('video-chat-result');
+
+            resultDiv.innerHTML = 'Processing your question...';
+
+            try {
+                const response = await axios.post('/video_chat', { video_url: videoUrl, question: question, translate: translate });
+                const { facts, summary, timestamps } = response.data;
+                
+                let html = '<div class="ai-response">';
+                
+                if (summary) {
+                    html += `<h3>${translate ? 'Zusammenfassung' : 'Summary'}:</h3><p>${summary}</p>`;
+                }
+                
+                if (facts && facts.length > 0) {
+                    html += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
+                    facts.forEach(fact => {
+                        html += `<li>${fact}</li>`;
+                    });
+                    html += '</ul>';
+                }
+                
+                if (timestamps && timestamps.length > 0) {
+                    html += `<h3>${translate ? 'Relevante Zeitstempel' : 'Relevant Timestamps'}:</h3><ul>`;
+                    timestamps.forEach(timestamp => {
+                        html += `<li>${timestamp}</li>`;
+                    });
+                    html += '</ul>';
+                }
+
+                if (!facts.length && !summary && !timestamps.length) {
+                    html += `<p>${translate ? 'Keine strukturierten Informationen gefunden. Hier ist die Rohausgabe:' : 'No structured information found. Here\'s the raw response:'}</p>`;
+                    html += `<p>${summary}</p>`;
+                }
+                
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = 'Error: Failed to get an answer';
+            }
+        }
+
+        function fillSummarizeBox(videoUrl) {
+            document.getElementById('video-url').value = videoUrl;
+        }
+
+        function fillQuestionBox(videoUrl) {
+            document.getElementById('video-chat-url').value = videoUrl;
+        }
+    </script>
+</body>
+</html>
