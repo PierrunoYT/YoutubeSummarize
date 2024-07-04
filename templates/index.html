@@ -123,9 +123,15 @@
                         progressBar.style.width = percentCompleted + '%';
                     }
                 });
-                const { overview, key_points } = response.data;
-                let summaryHtml = `<h3>${translate ? 'Überblick' : 'Overview'}:</h3><p>${overview}</p>`;
-                summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3>${key_points}`;
+                const { summary, key_points } = response.data;
+                let summaryHtml = `<h3>${translate ? 'Zusammenfassung' : 'Summary'}:</h3><p>${summary}</p>`;
+                summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
+                key_points.split('\n').forEach(point => {
+                    if (point.trim() !== '') {
+                        summaryHtml += `<li>${point.trim()}</li>`;
+                    }
+                });
+                summaryHtml += '</ul>';
                 summaryResult.innerHTML = summaryHtml;
                 progressBar.style.width = '100%';
             } catch (error) {
