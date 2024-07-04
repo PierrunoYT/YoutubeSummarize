@@ -247,17 +247,17 @@ function loadVideoAndThumbnail(videoUrl = null, videoTitle = null) {
 function toggleSummaryChat() {
     const summaryContainer = document.getElementById('summary-container');
     const chatContainer = document.getElementById('video-chat-container');
-    const toggleLabel = document.getElementById('toggle-label');
+    const toggleText = document.getElementById('toggle-text');
     const isChecked = document.getElementById('toggle-switch').checked;
 
     if (isChecked) {
         summaryContainer.style.display = 'none';
         chatContainer.style.display = 'block';
-        toggleLabel.textContent = 'Chat';
+        toggleText.textContent = 'Chat';
     } else {
         summaryContainer.style.display = 'block';
         chatContainer.style.display = 'none';
-        toggleLabel.textContent = 'Summary';
+        toggleText.textContent = 'Summary';
     }
 }
 
