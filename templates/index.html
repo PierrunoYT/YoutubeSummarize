@@ -79,6 +79,13 @@
             document.getElementById('chat-messages').innerHTML = '';
             // Focus on the question input
             document.getElementById('video-chat-question').focus();
+            // Ensure the video URL is set
+            if (!videoUrl) {
+                alert('Please enter a YouTube video URL first.');
+                return;
+            }
+            // Load the video if not already loaded
+            loadVideoAndThumbnail(videoUrl);
         }
 
         function displayVideos(videos) {
