@@ -125,15 +125,19 @@
                 });
                 const { summary, key_points } = response.data;
                 let summaryHtml = `<h3>${translate ? 'Fließende Textzusammenfassung' : 'Flowing Text Summary'}:</h3><p>${summary}</p>`;
-                summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
-                key_points.split('\n').forEach(point => {
-                    if (point.trim() !== '') {
-                        // Remove the leading dash if present
-                        let cleanPoint = point.trim().replace(/^[-•]\s*/, '');
-                        summaryHtml += `<li>${cleanPoint}</li>`;
-                    }
-                });
-                summaryHtml += '</ul>';
+                if (key_points.trim() !== '') {
+                    summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
+                    key_points.split('\n').forEach(point => {
+                        if (point.trim() !== '') {
+                            // Remove the leading dash if present and skip "Kernpunkte:" entry
+                            let cleanPoint = point.trim().replace(/^[-•]\s*/, '');
+                            if (cleanPoint.toLowerCase() !== 'kernpunkte:') {
+                                summaryHtml += `<li>${cleanPoint}</li>`;
+                            }
+                        }
+                    });
+                    summaryHtml += '</ul>';
+                }
                 summaryResult.innerHTML = summaryHtml;
                 progressBar.style.width = '100%';
             } catch (error) {
