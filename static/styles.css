@@ -358,8 +358,8 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -372,8 +372,8 @@ button:hover {
 .toggle-icon::after {
     content: '';
     position: absolute;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
@@ -382,14 +382,14 @@ button:hover {
     background-color: #FFD700; /* Sun color */
     box-shadow: 0 0 5px #FFD700;
     opacity: 1;
-    transform: translateX(0);
+    transform: translateX(-2px);
 }
 
 .toggle-icon::after {
     background-color: #F4A460; /* Moon color */
     box-shadow: 0 0 5px #F4A460;
     opacity: 0;
-    transform: translateX(0);
+    transform: translateX(2px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-track {
