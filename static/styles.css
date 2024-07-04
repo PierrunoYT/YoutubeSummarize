@@ -397,7 +397,7 @@ input[type="checkbox"]:checked + .toggle-label .toggle-track {
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-indicator {
-    transform: translateX(12px);
+    transform: translateX(15px);
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
