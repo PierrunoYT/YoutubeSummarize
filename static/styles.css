@@ -47,8 +47,11 @@ h2 {
 
 .two-column-layout {
     display: flex;
-    flex-direction: column;
     gap: 20px;
+}
+
+.left-column, .right-column {
+    flex: 1;
 }
 
 #video-container, #summary-container, #video-chat-container {
@@ -59,20 +62,16 @@ h2 {
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
-    width: 80%;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
     min-height: 300px;
 }
 
-#video-results, #summary-result, #video-chat-result {
+#video-results, #summary-result, #chat-messages {
     flex: 1;
     overflow-y: auto;
     max-height: 300px;
 }
 
-#video-results, #summary-result, #video-chat-result {
+#video-results, #summary-result, #chat-messages {
     height: 300px;
     overflow-y: auto;
     margin-bottom: 15px;
@@ -184,6 +183,7 @@ button:hover {
     max-width: 100%;
     height: auto;
     border-radius: 10px;
+    cursor: pointer;
 }
 
 #video-results a {
@@ -261,6 +261,96 @@ button:hover {
     padding: 5px;
     background-color: #f9f9f9;
     border-radius: 5px;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 5px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-right: 10px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+#chat-messages {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-message, .ai-message {
+    max-width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+.user-message {
+    align-self: flex-end;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.ai-message {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+    color: var(--text-color);
 }
 
 @media (max-width: 768px) {

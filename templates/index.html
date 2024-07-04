@@ -14,6 +14,7 @@
         <div id="main-search">
             <input type="text" id="main-video-url" placeholder="Paste YouTube URL here...">
             <div class="main-buttons">
+                <button onclick="loadVideoAndThumbnail()" class="cta-button">Load Video</button>
                 <button onclick="summarizeVideo(false)" class="cta-button">Summarize Video</button>
                 <button onclick="startVideoChat()" class="cta-button">Start Chat</button>
             </div>
@@ -27,19 +28,28 @@
                     <div id="video-results"></div>
                 </div>
                 <div id="video-player"></div>
+                <div id="video-thumbnail"></div>
             </div>
             <div class="right-column">
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-switch" onchange="toggleSummaryChat()">
+                        <span class="slider round"></span>
+                    </label>
+                    <span id="toggle-label">Summary</span>
+                </div>
                 <div id="summary-container">
                     <h2>YouTube Video Summary</h2>
                     <button onclick="summarizeVideo(true)">Summarize in German</button>
                     <div id="summary-result"></div>
+                    <div id="summary-progress" class="progress-bar"></div>
                 </div>
-                <div id="video-chat-container">
+                <div id="video-chat-container" style="display: none;">
                     <h2>Chat with YouTube Video</h2>
+                    <div id="chat-messages"></div>
                     <textarea id="video-chat-question" placeholder="Ask a question about the video..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
                     <button onclick="askVideoQuestion(false)">Ask Question</button>
                     <button onclick="askVideoQuestion(true)">Ask Question (German)</button>
-                    <div id="video-chat-result"></div>
                 </div>
             </div>
         </div>
@@ -61,9 +71,10 @@
         }
 
         function startVideoChat() {
+            document.getElementById('toggle-switch').checked = true;
+            toggleSummaryChat();
             const videoUrl = document.getElementById('main-video-url').value;
             document.getElementById('video-chat-container').scrollIntoView({ behavior: 'smooth' });
-            // You can add more functionality here, like automatically filling the video URL in the chat section
         }
 
         function displayVideos(videos) {
@@ -74,45 +85,62 @@
                 const videoElement = document.createElement('div');
                 videoElement.innerHTML = `
                     <h3>${video.title}</h3>
-                    <img src="${video.thumbnail}" alt="${video.title}">
+                    <img src="${video.thumbnail}" alt="${video.title}" onclick="loadVideoAndThumbnail('https://www.youtube.com/watch?v=${video.video_id}')">
                     <p>${video.description}</p>
                     <a href="https://www.youtube.com/watch?v=${video.video_id}" target="_blank">Watch Video</a>
-                    <button onclick="fillSummarizeBox('https://www.youtube.com/watch?v=${video.video_id}')">Summarize</button>
-                    <button onclick="fillQuestionBox('https://www.youtube.com/watch?v=${video.video_id}')">Ask Question</button>
+                    <button onclick="loadVideoAndThumbnail('https://www.youtube.com/watch?v=${video.video_id}')">Load Video</button>
                 `;
                 videoResults.appendChild(videoElement);
             });
         }
 
         async function summarizeVideo(translate) {
-            const input = document.getElementById('video-url');
-            const videoUrl = input.value;
-            input.value = '';
-
+            const videoUrl = document.getElementById('main-video-url').value;
             const summaryResult = document.getElementById('summary-result');
+            const progressBar = document.getElementById('summary-progress');
+
             summaryResult.innerHTML = 'Summarizing video...';
+            progressBar.style.width = '0%';
 
             try {
-                const response = await axios.post('/summarize_video', { video_url: videoUrl, translate: translate });
+                const response = await axios.post('/summarize_video', { 
+                    video_url: videoUrl, 
+                    translate: translate 
+                }, {
+                    onUploadProgress: progressEvent => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        progressBar.style.width = percentCompleted + '%';
+                    }
+                });
                 summaryResult.innerHTML = `<p><strong>Summary:</strong> ${response.data.summary}</p>`;
+                progressBar.style.width = '100%';
             } catch (error) {
                 console.error('Error:', error);
                 summaryResult.innerHTML = 'Error: Failed to summarize video';
+                progressBar.style.width = '0%';
             }
         }
 
         async function askVideoQuestion(translate) {
-            const videoUrl = document.getElementById('video-chat-url').value;
+            const videoUrl = document.getElementById('main-video-url').value;
             const question = document.getElementById('video-chat-question').value;
-            const resultDiv = document.getElementById('video-chat-result');
+            const chatMessages = document.getElementById('chat-messages');
 
-            resultDiv.innerHTML = 'Processing your question...';
+            const userMessage = document.createElement('div');
+            userMessage.className = 'user-message';
+            userMessage.textContent = question;
+            chatMessages.appendChild(userMessage);
+
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'ai-message';
+            aiMessage.textContent = 'Processing your question...';
+            chatMessages.appendChild(aiMessage);
 
             try {
                 const response = await axios.post('/video_chat', { video_url: videoUrl, question: question, translate: translate });
                 const { facts, summary, timestamps } = response.data;
                 
-                let html = '<div class="ai-response">';
+                let html = '';
                 
                 if (summary) {
                     html += `<h3>${translate ? 'Zusammenfassung' : 'Summary'}:</h3><p>${summary}</p>`;
@@ -139,20 +167,46 @@
                     html += `<p>${summary}</p>`;
                 }
                 
-                html += '</div>';
-                resultDiv.innerHTML = html;
+                aiMessage.innerHTML = html;
             } catch (error) {
                 console.error('Error:', error);
-                resultDiv.innerHTML = 'Error: Failed to get an answer';
+                aiMessage.textContent = 'Error: Failed to get an answer';
             }
+
+            document.getElementById('video-chat-question').value = '';
         }
 
-        function fillSummarizeBox(videoUrl) {
-            document.getElementById('video-url').value = videoUrl;
+        function loadVideoAndThumbnail(videoUrl = null) {
+            if (!videoUrl) {
+                videoUrl = document.getElementById('main-video-url').value;
+            }
+            const videoId = videoUrl.split('v=')[1];
+            const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+            
+            const thumbnailContainer = document.getElementById('video-thumbnail');
+            thumbnailContainer.innerHTML = `<img src="${thumbnailUrl}" alt="Video Thumbnail">`;
+            
+            const videoPlayer = document.getElementById('video-player');
+            videoPlayer.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            document.getElementById('main-video-url').value = videoUrl;
         }
 
-        function fillQuestionBox(videoUrl) {
-            document.getElementById('video-chat-url').value = videoUrl;
+        function toggleSummaryChat() {
+            const summaryContainer = document.getElementById('summary-container');
+            const chatContainer = document.getElementById('video-chat-container');
+            const toggleLabel = document.getElementById('toggle-label');
+            const isChecked = document.getElementById('toggle-switch').checked;
+
+            if (isChecked) {
+                summaryContainer.style.display = 'none';
+                chatContainer.style.display = 'block';
+                toggleLabel.textContent = 'Chat';
+            } else {
+                summaryContainer.style.display = 'block';
+                chatContainer.style.display = 'none';
+                toggleLabel.textContent = 'Summary';
+            }
         }
     </script>
 </body>
