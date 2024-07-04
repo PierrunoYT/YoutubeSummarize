@@ -374,11 +374,13 @@ input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
     width: 26px;
     height: 26px;
     top: 50%;
+    left: 2px;
     transform: translateY(-50%);
+    transition: transform 0.3s ease;
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon {
-    transform: translate(30px, -50%);
+    transform: translate(28px, -50%);
 }
 
 #chat-messages {
