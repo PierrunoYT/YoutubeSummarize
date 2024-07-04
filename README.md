@@ -1,6 +1,6 @@
-# YouTube Search and Analysis Application
+# VideoVoyager: YouTube Search and Analysis Application
 
-This application provides YouTube video search and summarization capabilities. It offers a user-friendly interface for searching YouTube videos and generating summaries of video content.
+VideoVoyager is an innovative application that provides YouTube video search and summarization capabilities. It offers a user-friendly interface for exploring YouTube content, generating concise summaries, and engaging in AI-powered conversations about video content.
 
 ## Features
 
