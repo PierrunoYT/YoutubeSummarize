@@ -64,7 +64,7 @@ body.dark-mode {
 }
 
 .toggle-icon {
-    position: relative;
+    position: absolute;
     width: 20px;
     height: 20px;
     display: flex;
@@ -75,6 +75,9 @@ body.dark-mode {
 .toggle-icon::before {
     content: '☀️';
     font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 input[type="checkbox"]:checked + .toggle-label {
