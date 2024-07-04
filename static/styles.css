@@ -364,6 +364,23 @@ input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
     content: '🌙';
 }
 
+/* Adjustments for better fitting */
+.toggle-label {
+    box-sizing: border-box;
+    padding: 2px;
+}
+
+.toggle-icon {
+    width: 26px;
+    height: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+input[type="checkbox"]:checked + .toggle-label .toggle-icon {
+    transform: translate(30px, -50%);
+}
+
 #chat-messages {
     display: flex;
     flex-direction: column;
