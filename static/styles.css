@@ -135,11 +135,17 @@ textarea {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .cta-button:hover {
     background-color: var(--secondary-color);
+}
+
+/* Hover-Effekt für interaktive Elemente */
+button:hover, .cta-button:hover, #video-results img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 button {
@@ -153,7 +159,7 @@ button {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 10px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 #video-container, #summary-container, #video-chat-container {
@@ -354,6 +360,18 @@ input:checked + .slider:before {
     align-self: flex-start;
     background-color: #f0f0f0;
     color: var(--text-color);
+}
+
+/* Pulsierender Ladeindikator */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+    display: inline-block;
 }
 
 @media (max-width: 768px) {

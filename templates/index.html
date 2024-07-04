@@ -56,14 +56,26 @@
     </div>
 
     <script>
+        function showLoading(element) {
+            element.classList.add('loading');
+        }
+
+        function hideLoading(element) {
+            element.classList.remove('loading');
+        }
+
         async function searchVideos() {
             const input = document.getElementById('video-search');
+            const searchButton = document.querySelector('#video-container button');
             const query = input.value;
             input.value = '';
 
+            showLoading(searchButton);
             try {
                 const response = await axios.post('/search_videos', { query: query });
                 displayVideos(response.data);
+            } finally {
+                hideLoading(searchButton);
             } catch (error) {
                 console.error('Error:', error);
                 displayVideos([{ title: 'Error: Failed to search videos' }]);
@@ -109,9 +121,11 @@
             const videoUrl = document.getElementById('main-video-url').value;
             const summaryResult = document.getElementById('summary-result');
             const progressBar = document.getElementById('summary-progress');
+            const summarizeButton = document.querySelector('#summary-container button');
 
             summaryResult.innerHTML = 'Summarizing video...';
             progressBar.style.width = '0%';
+            showLoading(summarizeButton);
 
             try {
                 const response = await axios.post('/summarize_video', { 
@@ -144,6 +158,8 @@
                 console.error('Error:', error);
                 summaryResult.innerHTML = 'Error: Failed to summarize video';
                 progressBar.style.width = '0%';
+            } finally {
+                hideLoading(summarizeButton);
             }
         }
 
@@ -151,6 +167,7 @@
             const videoUrl = document.getElementById('main-video-url').value;
             const question = document.getElementById('video-chat-question').value;
             const chatMessages = document.getElementById('chat-messages');
+            const askButton = document.querySelector('#video-chat-container button');
 
             const userMessage = document.createElement('div');
             userMessage.className = 'user-message';
@@ -162,6 +179,7 @@
             aiMessage.textContent = 'Processing your question...';
             chatMessages.appendChild(aiMessage);
 
+            showLoading(askButton);
             try {
                 const response = await axios.post('/video_chat', { video_url: videoUrl, question: question, translate: translate });
                 const { facts, summary, timestamps } = response.data;
@@ -197,6 +215,8 @@
             } catch (error) {
                 console.error('Error:', error);
                 aiMessage.textContent = 'Error: Failed to get an answer';
+            } finally {
+                hideLoading(askButton);
             }
 
             document.getElementById('video-chat-question').value = '';
