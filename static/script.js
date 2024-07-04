@@ -1,8 +1,14 @@
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
 function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle.checked) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'true');
+    } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'false');
+    }
 }
 
 // Check for saved dark mode preference and initialize the toggle
@@ -11,15 +17,13 @@ function initializeDarkMode() {
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
         darkModeToggle.checked = true;
+    } else {
+        document.body.classList.remove('dark-mode');
+        darkModeToggle.checked = false;
     }
     
     // Add event listener to the toggle
     darkModeToggle.addEventListener('change', toggleDarkMode);
-}
-
-// Apply dark mode immediately if it's set in localStorage
-if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
 }
 
 // Call initializeDarkMode when the DOM is fully loaded
