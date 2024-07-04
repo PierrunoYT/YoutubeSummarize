@@ -350,11 +350,27 @@ button:hover {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.toggle-icon {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
 }
 
 .toggle-icon::before {
     content: '🌙';
-    font-size: 16px;
+}
+
+.toggle-icon::after {
+    content: '☀️';
+    position: absolute;
+    opacity: 0;
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-track {
@@ -366,7 +382,11 @@ input[type="checkbox"]:checked + .toggle-label .toggle-indicator {
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
-    content: '☀️';
+    opacity: 0;
+}
+
+input[type="checkbox"]:checked + .toggle-label .toggle-icon::after {
+    opacity: 1;
 }
 
 #chat-messages {
