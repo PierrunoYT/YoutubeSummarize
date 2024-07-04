@@ -1,0 +1,25 @@
+@media (max-width: 768px) {
+    .two-column-layout {
+        flex-direction: column;
+    }
+
+    .left-column, .right-column {
+        width: 100%;
+    }
+
+    input[type="text"], button {
+        width: 100%;
+    }
+
+    #main-video-url {
+        width: 100%;
+    }
+
+    .main-buttons {
+        flex-direction: column;
+    }
+
+    .cta-button {
+        margin-bottom: 10px;
+    }
+}
