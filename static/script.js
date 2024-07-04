@@ -244,20 +244,22 @@ function loadVideoAndThumbnail(videoUrl = null, videoTitle = null) {
     document.getElementById('main-video-url').value = videoUrl;
 }
 
-function toggleSummaryChat() {
+function switchMode(mode) {
     const summaryContainer = document.getElementById('summary-container');
     const chatContainer = document.getElementById('video-chat-container');
-    const toggleText = document.getElementById('toggle-text');
-    const isChecked = document.getElementById('toggle-switch').checked;
+    const summaryBtn = document.getElementById('summary-btn');
+    const chatBtn = document.getElementById('chat-btn');
 
-    if (isChecked) {
-        summaryContainer.style.display = 'none';
-        chatContainer.style.display = 'block';
-        toggleText.textContent = 'Chat';
-    } else {
+    if (mode === 'summary') {
         summaryContainer.style.display = 'block';
         chatContainer.style.display = 'none';
-        toggleText.textContent = 'Summary';
+        summaryBtn.classList.add('active');
+        chatBtn.classList.remove('active');
+    } else {
+        summaryContainer.style.display = 'none';
+        chatContainer.style.display = 'block';
+        chatBtn.classList.add('active');
+        summaryBtn.classList.remove('active');
     }
 }
 

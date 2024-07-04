@@ -50,17 +50,9 @@
                 <div id="video-thumbnail"></div>
             </div>
             <div class="right-column">
-                <div class="summary-toggle">
-                    <input type="checkbox" id="toggle-switch" onchange="toggleSummaryChat()">
-                    <label for="toggle-switch" class="toggle-label">
-                        <div class="toggle-track">
-                            <div class="toggle-indicator">
-                                <span class="toggle-icon summary-icon">S</span>
-                                <span class="toggle-icon chat-icon">C</span>
-                            </div>
-                        </div>
-                    </label>
-                    <span id="toggle-text">Summary</span>
+                <div class="mode-switch">
+                    <button id="summary-btn" class="mode-btn active" onclick="switchMode('summary')">Summary</button>
+                    <button id="chat-btn" class="mode-btn" onclick="switchMode('chat')">Chat</button>
                 </div>
                 <div id="summary-container">
                     <h2>YouTube Video Summary</h2>
