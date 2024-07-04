@@ -355,8 +355,8 @@ button:hover {
 
 .toggle-icon {
     position: absolute;
-    top: 75%;
-    left: 80%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
     width: 26px;
     height: 26px;
