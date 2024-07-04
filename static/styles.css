@@ -417,3 +417,16 @@ button:hover {
     input[type="text"], button {
         width: 100%;
     }
+
+    #main-video-url {
+        width: 100%;
+    }
+
+    .main-buttons {
+        flex-direction: column;
+    }
+
+    .cta-button {
+        margin-bottom: 10px;
+    }
+}
