@@ -361,9 +361,11 @@ button:hover {
 .toggle-icon::before {
     content: '☀️';
     font-size: 16px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
 input[type="checkbox"]:checked + .toggle-label {
