@@ -308,57 +308,59 @@ button:hover {
     transition: width 0.3s ease;
 }
 
-.toggle-container {
+.dark-mode-toggle {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.switch {
-    position: relative;
+.dark-mode-toggle input[type="checkbox"] {
+    display: none;
+}
+
+.toggle-label {
     display: inline-block;
     width: 60px;
-    height: 34px;
-    margin-right: 10px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    height: 30px;
     background-color: #ccc;
-    transition: .4s;
-    border-radius: 34px;
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 26px;
+.toggle-icon {
+    display: block;
     width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
+    height: 26px;
     border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-input:checked + .slider {
+.toggle-icon::before {
+    content: '☀️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+}
+
+input[type="checkbox"]:checked + .toggle-label {
     background-color: var(--primary-color);
 }
 
-input:checked + .slider:before {
-    transform: translateX(26px);
+input[type="checkbox"]:checked + .toggle-label .toggle-icon {
+    transform: translateX(30px);
+    background-color: var(--background-color);
+}
+
+input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
+    content: '🌙';
 }
 
 #chat-messages {
