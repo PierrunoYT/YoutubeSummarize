@@ -103,7 +103,7 @@ def summarize_video():
                 "model": "anthropic/claude-3.5-sonnet",
                 "messages": [
                     {"role": "system", "content": "You are a helpful assistant that provides detailed summaries of YouTube video transcripts. Your summaries should be comprehensive and cover all major points discussed in the video. Provide a flowing text summary followed by a list of key points."},
-                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should include:\n1. A flowing text summary (about 3-5 sentences) of the main content without numbers or bullet points.\n2. A list of key points covering the main ideas and topics presented in the video.\n\nHere's the transcript:\n\n{full_text}"}
+                    {"role": "user", "content": f"Please provide a detailed summary of the following YouTube video transcript. The summary should include:\n1. A flowing text summary (about 3-5 sentences) of the main content without numbers or bullet points.\n2. A list of key points covering the main ideas and topics presented in the video.\n\nFormat your response as follows:\nSummary: [Your flowing text summary here]\n\nKey Points:\n- [First key point]\n- [Second key point]\n- [And so on...]\n\nHere's the transcript:\n\n{full_text}"}
                 ]
             }
         )
