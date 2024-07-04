@@ -322,7 +322,7 @@ button:hover {
     display: inline-block;
     width: 60px;
     height: 30px;
-    background-color: #ccc;
+    background-color: var(--primary-color);
     border-radius: 15px;
     position: relative;
     cursor: pointer;
@@ -339,6 +339,7 @@ button:hover {
     top: 2px;
     left: 2px;
     transition: transform 0.3s ease, background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-icon::before {
@@ -356,7 +357,7 @@ input[type="checkbox"]:checked + .toggle-label {
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon {
     transform: translateX(30px);
-    background-color: var(--background-color);
+    background-color: white;
 }
 
 input[type="checkbox"]:checked + .toggle-label .toggle-icon::before {
