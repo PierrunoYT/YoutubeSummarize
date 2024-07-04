@@ -10,7 +10,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Search and Analysis</h1>
+        <div class="header">
+            <h1>YouTube Search and Analysis</h1>
+            <div class="dark-mode-toggle">
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                    <span class="slider round"></span>
+                </label>
+                <span>Dark Mode</span>
+            </div>
+        </div>
+        <div id="favorites-container">
+            <h2>Favorites</h2>
+            <div id="favorites-list"></div>
+        </div>
         <div id="main-search">
             <input type="text" id="main-video-url" placeholder="Paste YouTube URL here...">
             <div class="main-buttons">
@@ -43,6 +56,7 @@
                     <button onclick="summarizeVideo(true)">Summarize in German</button>
                     <div id="summary-result"></div>
                     <div id="summary-progress" class="progress-bar"></div>
+                    <button onclick="shareSummary()" class="share-button">Share Summary</button>
                 </div>
                 <div id="video-chat-container" style="display: none;">
                     <h2>Chat with YouTube Video</h2>
@@ -56,9 +70,52 @@
     </div>
 
     <script>
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').checked = true;
+        }
+
         function showLoading(element) {
             element.classList.add('loading');
         }
+
+        function addToFavorites(videoUrl, videoTitle) {
+            if (!favorites.some(fav => fav.url === videoUrl)) {
+                favorites.push({ url: videoUrl, title: videoTitle });
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                updateFavoritesList();
+            }
+        }
+
+        function removeFromFavorites(videoUrl) {
+            favorites = favorites.filter(fav => fav.url !== videoUrl);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            updateFavoritesList();
+        }
+
+        function updateFavoritesList() {
+            const favoritesList = document.getElementById('favorites-list');
+            favoritesList.innerHTML = '';
+            favorites.forEach(fav => {
+                const favElement = document.createElement('div');
+                favElement.innerHTML = `
+                    <a href="${fav.url}" target="_blank">${fav.title}</a>
+                    <button onclick="removeFromFavorites('${fav.url}')">Remove</button>
+                `;
+                favoritesList.appendChild(favElement);
+            });
+        }
+
+        // Call this function when the page loads
+        updateFavoritesList();
 
         function hideLoading(element) {
             element.classList.remove('loading');
@@ -222,7 +279,7 @@
             document.getElementById('video-chat-question').value = '';
         }
 
-        function loadVideoAndThumbnail(videoUrl = null) {
+        function loadVideoAndThumbnail(videoUrl = null, videoTitle = null) {
             if (!videoUrl) {
                 videoUrl = document.getElementById('main-video-url').value;
             }
@@ -230,7 +287,10 @@
             const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
             
             const thumbnailContainer = document.getElementById('video-thumbnail');
-            thumbnailContainer.innerHTML = `<img src="${thumbnailUrl}" alt="Video Thumbnail">`;
+            thumbnailContainer.innerHTML = `
+                <img src="${thumbnailUrl}" alt="Video Thumbnail">
+                <button onclick="addToFavorites('${videoUrl}', '${videoTitle || 'Untitled Video'}')">Add to Favorites</button>
+            `;
             
             const videoPlayer = document.getElementById('video-player');
             videoPlayer.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
@@ -252,6 +312,32 @@
                 summaryContainer.style.display = 'block';
                 chatContainer.style.display = 'none';
                 toggleLabel.textContent = 'Summary';
+            }
+        }
+
+        function shareSummary() {
+            const summaryText = document.getElementById('summary-result').innerText;
+            const videoUrl = document.getElementById('main-video-url').value;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Video Summary',
+                    text: summaryText,
+                    url: videoUrl
+                }).then(() => {
+                    console.log('Summary shared successfully');
+                }).catch((error) => {
+                    console.error('Error sharing summary:', error);
+                });
+            } else {
+                // Fallback for browsers that don't support the Web Share API
+                const tempInput = document.createElement('textarea');
+                tempInput.value = `Video Summary for ${videoUrl}:\n\n${summaryText}`;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('Summary copied to clipboard!');
             }
         }
     </script>

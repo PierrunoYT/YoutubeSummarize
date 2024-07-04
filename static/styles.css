@@ -11,6 +11,35 @@
     --gradient-end: #64B5F6;
 }
 
+.dark-mode {
+    --primary-color: #64B5F6;
+    --secondary-color: #FF4444;
+    --background-color: #121212;
+    --text-color: #E0E0E0;
+    --container-bg: #1E1E1E;
+    --accent-color: #FF4444;
+    --gradient-start: #64B5F6;
+    --gradient-end: #4285F4;
+}
+
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.dark-mode-toggle span {
+    margin-left: 10px;
+    color: var(--text-color);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
 body {
     font-family: 'Roboto', 'Open Sans', sans-serif;
     background-color: var(--background-color);
