@@ -51,3 +51,70 @@ Ensure that you have valid API keys for both YouTube Data API v3 and OpenRouter,
 ## License
 
 This project is open-source and available under the MIT License.
+# VideoVoyager
+
+VideoVoyager is an AI-powered YouTube video analysis tool that helps users better understand video content through summaries and interactive chat.
+
+## Features
+
+- YouTube video search and playback
+- AI-powered video summarization
+- Interactive Q&A chat about video content
+- Bilingual support (English/German)
+- Dark/Light mode
+- Favorites system
+- Responsive design
+
+## Prerequisites
+
+- Python 3.8+
+- YouTube API key
+- OpenRouter API key (using Claude 3.5 Sonnet)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/videovoyager.git
+cd videovoyager
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+3. Copy `.env.template` to `.env` and fill in your API keys:
+```bash
+cp .env.template .env
+```
+
+4. Run the application:
+```bash
+python app.py
+```
+
+## Environment Variables
+
+Create a `.env` file with:
+- `YOUTUBE_API_KEY`: Your YouTube Data API key
+- `OPENROUTER_API_KEY`: Your OpenRouter API key
+
+## Usage
+
+1. Open http://localhost:5000 in your browser
+2. Search for videos or paste a YouTube URL
+3. Use the summarize or chat features to analyze video content
+4. Save favorite videos for later reference
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.

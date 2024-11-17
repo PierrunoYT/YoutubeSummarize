@@ -1,3 +1,10 @@
+"""
+VideoVoyager - AI-powered YouTube video analysis tool.
+
+This module provides the backend functionality for the VideoVoyager application,
+including video search, summarization, and interactive chat features.
+"""
+
 from flask import Flask, render_template, request, jsonify
 import os
 import requests
@@ -26,7 +33,16 @@ youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 # Global variable to store the current video transcript
 current_video_transcript = ""
 
-def translate_to_german(text):
+def translate_to_german(text: str) -> str:
+    """
+    Translate English text to German using the OpenRouter API.
+    
+    Args:
+        text (str): The English text to translate
+        
+    Returns:
+        str: The German translation or error message
+    """
     response = requests.post(
         "https://openrouter.ai/api/v1/chat/completions",
         headers={
@@ -57,6 +73,12 @@ def index():
 
 @app.route('/search_videos', methods=['POST'])
 def search_videos():
+    """
+    Search YouTube videos based on query.
+    
+    Returns:
+        JSON response containing video information or error message
+    """
     query = request.json['query']
     
     try:
@@ -83,6 +105,12 @@ def search_videos():
 
 @app.route('/summarize_video', methods=['POST'])
 def summarize_video():
+    """
+    Generate a summary of a YouTube video using its transcript.
+    
+    Returns:
+        JSON response containing summary and key points or error message
+    """
     video_url = request.json['video_url']
     translate = request.json.get('translate', False)
     video_id = video_url.split('v=')[1]
@@ -130,6 +158,12 @@ def summarize_video():
 
 @app.route('/video_chat', methods=['POST'])
 def video_chat():
+    """
+    Answer questions about a YouTube video using its transcript.
+    
+    Returns:
+        JSON response containing answer summary, facts, and timestamps or error message
+    """
     global current_video_transcript
     video_url = request.json.get('video_url')
     question = request.json.get('question')
