@@ -7,11 +7,16 @@ including video search, summarization, and interactive chat features.
 
 from flask import Flask, render_template, request, jsonify
 import os
+import re
 import requests
 import logging
+from typing import Dict, List, Optional, Union
+from functools import lru_cache
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
-from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,17 +26,69 @@ app = Flask(__name__)
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 
+# Set up rate limiting
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 # YouTube API key
 YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
-
-# OpenRouter API key
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+
+# Validate required API keys
+if not YOUTUBE_API_KEY or not OPENROUTER_API_KEY:
+    raise ValueError("Missing required API keys. Please check your .env file.")
 
 # YouTube API client
 youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
 # Global variable to store the current video transcript
 current_video_transcript = ""
+
+def error_response(message: str, status_code: int) -> tuple:
+    """
+    Create a standardized error response.
+    
+    Args:
+        message (str): Error message
+        status_code (int): HTTP status code
+        
+    Returns:
+        tuple: JSON response with error details and status code
+    """
+    return jsonify({"error": message, "status": status_code}), status_code
+
+def validate_youtube_url(url: str) -> bool:
+    """
+    Validate YouTube URL format.
+    
+    Args:
+        url (str): YouTube URL to validate
+        
+    Returns:
+        bool: True if valid, False otherwise
+    """
+    pattern = r'^https?:\/\/(www\.)?youtube\.com\/watch\?v=[\w-]{11}$'
+    return bool(re.match(pattern, url))
+
+@lru_cache(maxsize=100)
+def get_video_transcript(video_id: str) -> str:
+    """
+    Get video transcript with caching.
+    
+    Args:
+        video_id (str): YouTube video ID
+        
+    Returns:
+        str: Combined transcript text
+        
+    Raises:
+        TranscriptsDisabled: If video has no transcript
+    """
+    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    return ' '.join([entry['text'] for entry in transcript])
 
 def translate_to_german(text: str) -> str:
     """
@@ -43,43 +100,50 @@ def translate_to_german(text: str) -> str:
     Returns:
         str: The German translation or error message
     """
-    response = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": "anthropic/claude-3.5-sonnet",
-            "messages": [
-                {"role": "system", "content": "You are a helpful assistant that translates English to German. Provide only the translated text without any additional comments or prefixes."},
-                {"role": "user", "content": f"Translate the following text to German:\n\n{text}"}
-            ]
-        }
-    )
-    
-    if response.status_code == 200:
+    try:
+        response = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "anthropic/claude-3.5-sonnet",
+                "messages": [
+                    {"role": "system", "content": "You are a helpful assistant that translates English to German. Provide only the translated text without any additional comments or prefixes."},
+                    {"role": "user", "content": f"Translate the following text to German:\n\n{text}"}
+                ]
+            }
+        )
+        
+        if response.status_code != 200:
+            raise ValueError(f"Translation API error: {response.status_code}")
+            
         translation = response.json()['choices'][0]['message']['content']
-        # Remove any potential prefixes like "Here's the German translation:" or "Here's the translation of that text into German:"
+        # Remove any potential prefixes
         translation = translation.replace("Here's the German translation:", "").replace("Here's the translation of that text into German:", "").strip()
         return translation
-    else:
-        app.logger.error(f"Translation API error: {response.status_code} - {response.text}")
+    except Exception as e:
+        app.logger.error(f"Translation error: {str(e)}")
         return "Error: Failed to translate"
 
 @app.route('/')
-def index():
+def index() -> str:
+    """Render the main page."""
     return render_template('index.html')
 
 @app.route('/search_videos', methods=['POST'])
-def search_videos():
+@limiter.limit("30/minute")
+def search_videos() -> tuple:
     """
     Search YouTube videos based on query.
     
     Returns:
-        JSON response containing video information or error message
+        tuple: JSON response containing video information or error message
     """
-    query = request.json['query']
+    query = request.json.get('query')
+    if not query:
+        return error_response("Search query is required", 400)
     
     try:
         search_response = youtube.search().list(
@@ -101,24 +165,36 @@ def search_videos():
 
         return jsonify(videos)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Search error: {str(e)}")
+        return error_response(str(e), 500)
 
 @app.route('/summarize_video', methods=['POST'])
-def summarize_video():
+@limiter.limit("10/minute")
+def summarize_video() -> tuple:
     """
     Generate a summary of a YouTube video using its transcript.
     
     Returns:
-        JSON response containing summary and key points or error message
+        tuple: JSON response containing summary and key points or error message
     """
-    video_url = request.json['video_url']
+    video_url = request.json.get('video_url')
     translate = request.json.get('translate', False)
-    video_id = video_url.split('v=')[1]
+    
+    if not video_url:
+        return error_response("Video URL is required", 400)
+        
+    if not validate_youtube_url(video_url):
+        return error_response("Invalid YouTube URL format", 400)
     
     try:
-        # Fetch the transcript
-        transcript = YouTubeTranscriptApi.get_transcript(video_id)
-        full_text = ' '.join([entry['text'] for entry in transcript])
+        video_id = video_url.split('v=')[1]
+        
+        try:
+            full_text = get_video_transcript(video_id)
+        except TranscriptsDisabled:
+            return error_response("This video has no transcript available", 400)
+        except Exception as e:
+            return error_response(f"Failed to get video transcript: {str(e)}", 500)
         
         # Use OpenRouter API to summarize the transcript
         response = requests.post(
@@ -136,47 +212,58 @@ def summarize_video():
             }
         )
         
-        if response.status_code == 200:
-            content = response.json()['choices'][0]['message']['content']
+        if response.status_code != 200:
+            return error_response("Failed to get summary from OpenRouter", 500)
             
-            # Split the content into summary and key points
-            parts = content.split('\n\n', 1)
-            summary = parts[0].strip()
-            key_points = parts[1].strip() if len(parts) > 1 else ""
-            
-            if translate:
-                summary = translate_to_german(summary)
-                key_points = translate_to_german(key_points)
-            
-            return jsonify({"summary": summary, "key_points": key_points})
-        else:
-            app.logger.error(f"OpenRouter API error: {response.status_code} - {response.text}")
-            return jsonify({"error": "Failed to get summary from OpenRouter"}), 500
+        content = response.json()['choices'][0]['message']['content']
+        
+        # Split the content into summary and key points
+        parts = content.split('\n\n', 1)
+        summary = parts[0].strip()
+        key_points = parts[1].strip() if len(parts) > 1 else ""
+        
+        if translate:
+            summary = translate_to_german(summary)
+            key_points = translate_to_german(key_points)
+        
+        return jsonify({"summary": summary, "key_points": key_points})
     except Exception as e:
         app.logger.error(f"Error in summarize_video: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return error_response(str(e), 500)
 
 @app.route('/video_chat', methods=['POST'])
-def video_chat():
+@limiter.limit("20/minute")
+def video_chat() -> tuple:
     """
     Answer questions about a YouTube video using its transcript.
     
     Returns:
-        JSON response containing answer summary, facts, and timestamps or error message
+        tuple: JSON response containing answer summary, facts, and timestamps or error message
     """
     global current_video_transcript
     video_url = request.json.get('video_url')
     question = request.json.get('question')
     translate = request.json.get('translate', False)
 
-    if not current_video_transcript or video_url:
+    if not question:
+        return error_response("Question is required", 400)
+
+    if video_url:
+        if not validate_youtube_url(video_url):
+            return error_response("Invalid YouTube URL format", 400)
+            
         try:
             video_id = video_url.split('v=')[1]
-            transcript = YouTubeTranscriptApi.get_transcript(video_id)
-            current_video_transcript = ' '.join([entry['text'] for entry in transcript])
+            try:
+                current_video_transcript = get_video_transcript(video_id)
+            except TranscriptsDisabled:
+                return error_response("This video has no transcript available", 400)
         except Exception as e:
             app.logger.error(f"Error fetching video transcript: {str(e)}")
-            return jsonify({"error": f"Failed to fetch video transcript: {str(e)}"}), 500
+            return error_response(f"Failed to fetch video transcript: {str(e)}", 500)
+
+    if not current_video_transcript:
+        return error_response("No video transcript available. Please load a video first.", 400)
 
     try:
         response = requests.post(
@@ -194,43 +281,42 @@ def video_chat():
             }
         )
 
-        if response.status_code == 200:
-            content = response.json()['choices'][0]['message']['content']
-            
-            # Split the content into summary and key points
-            parts = content.split('Key Points:', 1)
-            
-            # Extract summary
-            summary = parts[0].replace("Summary:", "").strip()
-            
-            # Extract key points
-            facts = []
-            if len(parts) > 1:
-                key_points = parts[1].strip()
-                lines = key_points.split('\n')
-                for line in lines:
-                    line = line.strip()
-                    if line.startswith('-'):
-                        facts.append(line.lstrip('- ').strip())
-            
-            # Timestamps are not applicable in this case, so we'll leave it empty
-            timestamps = []
+        if response.status_code != 200:
+            return error_response("Failed to get answer from OpenRouter", 500)
 
-            if translate:
-                summary = translate_to_german(summary)
-                facts = [translate_to_german(fact) for fact in facts]
+        content = response.json()['choices'][0]['message']['content']
+        
+        # Split the content into summary and key points
+        parts = content.split('Key Points:', 1)
+        
+        # Extract summary
+        summary = parts[0].replace("Summary:", "").strip()
+        
+        # Extract key points
+        facts = []
+        if len(parts) > 1:
+            key_points = parts[1].strip()
+            lines = key_points.split('\n')
+            for line in lines:
+                line = line.strip()
+                if line.startswith('-'):
+                    facts.append(line.lstrip('- ').strip())
+        
+        # Timestamps are not applicable in this case
+        timestamps = []
 
-            return jsonify({
-                "summary": summary,
-                "facts": facts,
-                "timestamps": timestamps
-            })
-        else:
-            app.logger.error(f"OpenRouter API error: {response.status_code} - {response.text}")
-            return jsonify({"error": "Failed to get answer from OpenRouter"}), 500
+        if translate:
+            summary = translate_to_german(summary)
+            facts = [translate_to_german(fact) for fact in facts]
+
+        return jsonify({
+            "summary": summary,
+            "facts": facts,
+            "timestamps": timestamps
+        })
     except Exception as e:
         app.logger.error(f"Error in video_chat: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return error_response(str(e), 500)
 
 if __name__ == '__main__':
     app.run(debug=True)

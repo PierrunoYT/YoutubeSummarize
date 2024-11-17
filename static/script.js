@@ -30,10 +30,37 @@ function initializeDarkMode() {
 document.addEventListener('DOMContentLoaded', initializeDarkMode);
 
 function showLoading(element) {
-    element.classList.add('loading');
+    if (element) {
+        element.classList.add('loading');
+        element.disabled = true;
+    }
+}
+
+function hideLoading(element) {
+    if (element) {
+        element.classList.remove('loading');
+        element.disabled = false;
+    }
+}
+
+function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    document.querySelector('.container').insertBefore(errorDiv, document.querySelector('#main-search'));
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 5000);
 }
 
 function addToFavorites(videoUrl, videoTitle) {
+    if (!videoUrl || !videoTitle) {
+        showError('Invalid video information');
+        return;
+    }
+    
     if (!favorites.some(fav => fav.url === videoUrl)) {
         favorites.push({ url: videoUrl, title: videoTitle });
         localStorage.setItem('favorites', JSON.stringify(favorites));
@@ -42,6 +69,11 @@ function addToFavorites(videoUrl, videoTitle) {
 }
 
 function removeFromFavorites(videoUrl) {
+    if (!videoUrl) {
+        showError('Invalid video URL');
+        return;
+    }
+    
     favorites = favorites.filter(fav => fav.url !== videoUrl);
     localStorage.setItem('favorites', JSON.stringify(favorites));
     updateFavoritesList();
@@ -49,6 +81,8 @@ function removeFromFavorites(videoUrl) {
 
 function updateFavoritesList() {
     const favoritesList = document.getElementById('favorites-list');
+    if (!favoritesList) return;
+    
     favoritesList.innerHTML = '';
     favorites.forEach(fav => {
         const favElement = document.createElement('div');
@@ -63,49 +97,62 @@ function updateFavoritesList() {
 // Call this function when the page loads
 document.addEventListener('DOMContentLoaded', updateFavoritesList);
 
-function hideLoading(element) {
-    element.classList.remove('loading');
-}
-
 async function searchVideos() {
     const input = document.getElementById('video-search');
     const searchButton = document.querySelector('#video-container button');
-    const query = input.value;
+    const query = input.value.trim();
+    
+    if (!query) {
+        showError('Please enter a search query');
+        return;
+    }
+    
     input.value = '';
-
     showLoading(searchButton);
+    
     try {
         const response = await axios.post('/search_videos', { query: query });
+        if (!response.data) {
+            throw new Error('Empty response from server');
+        }
         displayVideos(response.data);
     } catch (error) {
         console.error('Error:', error);
-        displayVideos([{ title: 'Error: Failed to search videos' }]);
+        showError(error.response?.data?.error || 'Failed to search videos');
+        displayVideos([]);
     } finally {
         hideLoading(searchButton);
     }
 }
 
 function startVideoChat() {
+    const videoUrl = document.getElementById('main-video-url').value.trim();
+    if (!videoUrl) {
+        showError('Please enter a YouTube video URL first');
+        return;
+    }
+    
     document.getElementById('toggle-switch').checked = true;
     toggleSummaryChat();
-    const videoUrl = document.getElementById('main-video-url').value;
     document.getElementById('video-chat-container').scrollIntoView({ behavior: 'smooth' });
     // Clear previous chat messages
     document.getElementById('chat-messages').innerHTML = '';
     // Focus on the question input
     document.getElementById('video-chat-question').focus();
-    // Ensure the video URL is set
-    if (!videoUrl) {
-        alert('Please enter a YouTube video URL first.');
-        return;
-    }
     // Load the video if not already loaded
     loadVideoAndThumbnail(videoUrl);
 }
 
 function displayVideos(videos) {
     const videoResults = document.getElementById('video-results');
+    if (!videoResults) return;
+    
     videoResults.innerHTML = '';
+    
+    if (!videos.length) {
+        videoResults.innerHTML = '<p>No videos found</p>';
+        return;
+    }
 
     videos.forEach(video => {
         const videoElement = document.createElement('div');
@@ -121,7 +168,12 @@ function displayVideos(videos) {
 }
 
 async function summarizeVideo(translate) {
-    const videoUrl = document.getElementById('main-video-url').value;
+    const videoUrl = document.getElementById('main-video-url').value.trim();
+    if (!videoUrl) {
+        showError('Please enter a YouTube video URL first');
+        return;
+    }
+    
     const summaryResult = document.getElementById('summary-result');
     const progressBar = document.getElementById('summary-progress');
     const summarizeButton = document.querySelector('#summary-container button');
@@ -140,8 +192,14 @@ async function summarizeVideo(translate) {
                 progressBar.style.width = percentCompleted + '%';
             }
         });
+        
+        if (!response.data) {
+            throw new Error('Empty response from server');
+        }
+        
         const { summary, key_points } = response.data;
         let summaryHtml = `<h3>${translate ? 'Fließende Textzusammenfassung' : 'Flowing Text Summary'}:</h3><p>${summary}</p>`;
+        
         if (key_points.trim() !== '') {
             summaryHtml += `<h3>${translate ? 'Hauptpunkte' : 'Key Points'}:</h3><ul>`;
             key_points.split('\n').forEach(point => {
@@ -159,7 +217,8 @@ async function summarizeVideo(translate) {
         progressBar.style.width = '100%';
     } catch (error) {
         console.error('Error:', error);
-        summaryResult.innerHTML = 'Error: Failed to summarize video';
+        showError(error.response?.data?.error || 'Failed to summarize video');
+        summaryResult.innerHTML = '';
         progressBar.style.width = '0%';
     } finally {
         hideLoading(summarizeButton);
@@ -167,8 +226,14 @@ async function summarizeVideo(translate) {
 }
 
 async function askVideoQuestion(translate) {
-    const videoUrl = document.getElementById('main-video-url').value;
-    const question = document.getElementById('video-chat-question').value;
+    const videoUrl = document.getElementById('main-video-url').value.trim();
+    const question = document.getElementById('video-chat-question').value.trim();
+    
+    if (!question) {
+        showError('Please enter a question');
+        return;
+    }
+    
     const chatMessages = document.getElementById('chat-messages');
     const askButton = document.querySelector('#video-chat-container button');
 
@@ -184,7 +249,16 @@ async function askVideoQuestion(translate) {
 
     showLoading(askButton);
     try {
-        const response = await axios.post('/video_chat', { video_url: videoUrl, question: question, translate: translate });
+        const response = await axios.post('/video_chat', { 
+            video_url: videoUrl, 
+            question: question, 
+            translate: translate 
+        });
+        
+        if (!response.data) {
+            throw new Error('Empty response from server');
+        }
+        
         const { facts, summary, timestamps } = response.data;
         
         let html = '';
@@ -217,31 +291,46 @@ async function askVideoQuestion(translate) {
         aiMessage.innerHTML = html;
     } catch (error) {
         console.error('Error:', error);
+        showError(error.response?.data?.error || 'Failed to get an answer');
         aiMessage.textContent = 'Error: Failed to get an answer';
     } finally {
         hideLoading(askButton);
+        document.getElementById('video-chat-question').value = '';
     }
-
-    document.getElementById('video-chat-question').value = '';
 }
 
 function loadVideoAndThumbnail(videoUrl = null, videoTitle = null) {
     if (!videoUrl) {
-        videoUrl = document.getElementById('main-video-url').value;
+        videoUrl = document.getElementById('main-video-url').value.trim();
     }
-    const videoId = videoUrl.split('v=')[1];
-    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
     
-    const thumbnailContainer = document.getElementById('video-thumbnail');
-    thumbnailContainer.innerHTML = `
-        <img src="${thumbnailUrl}" alt="Video Thumbnail">
-        <button onclick="addToFavorites('${videoUrl}', '${videoTitle || 'Untitled Video'}')">Add to Favorites</button>
-    `;
+    if (!videoUrl) {
+        showError('Please enter a YouTube video URL');
+        return;
+    }
     
-    const videoPlayer = document.getElementById('video-player');
-    videoPlayer.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    
-    document.getElementById('main-video-url').value = videoUrl;
+    try {
+        const videoId = videoUrl.split('v=')[1];
+        if (!videoId) {
+            throw new Error('Invalid YouTube URL');
+        }
+        
+        const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/0.jpg`;
+        
+        const thumbnailContainer = document.getElementById('video-thumbnail');
+        thumbnailContainer.innerHTML = `
+            <img src="${thumbnailUrl}" alt="Video Thumbnail">
+            <button onclick="addToFavorites('${videoUrl}', '${videoTitle || 'Untitled Video'}')">Add to Favorites</button>
+        `;
+        
+        const videoPlayer = document.getElementById('video-player');
+        videoPlayer.innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        
+        document.getElementById('main-video-url').value = videoUrl;
+    } catch (error) {
+        console.error('Error:', error);
+        showError('Invalid YouTube URL format');
+    }
 }
 
 function switchMode(mode) {
@@ -263,28 +352,35 @@ function switchMode(mode) {
     }
 }
 
-function shareSummary() {
+async function shareSummary() {
     const summaryText = document.getElementById('summary-result').innerText;
     const videoUrl = document.getElementById('main-video-url').value;
     
-    if (navigator.share) {
-        navigator.share({
-            title: 'Video Summary',
-            text: summaryText,
-            url: videoUrl
-        }).then(() => {
+    if (!summaryText) {
+        showError('No summary available to share');
+        return;
+    }
+    
+    try {
+        if (navigator.share) {
+            await navigator.share({
+                title: 'Video Summary',
+                text: summaryText,
+                url: videoUrl
+            });
             console.log('Summary shared successfully');
-        }).catch((error) => {
-            console.error('Error sharing summary:', error);
-        });
-    } else {
-        // Fallback for browsers that don't support the Web Share API
-        const tempInput = document.createElement('textarea');
-        tempInput.value = `Video Summary for ${videoUrl}:\n\n${summaryText}`;
-        document.body.appendChild(tempInput);
-        tempInput.select();
-        document.execCommand('copy');
-        document.body.removeChild(tempInput);
-        alert('Summary copied to clipboard!');
+        } else {
+            // Fallback for browsers that don't support the Web Share API
+            const tempInput = document.createElement('textarea');
+            tempInput.value = `Video Summary for ${videoUrl}:\n\n${summaryText}`;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert('Summary copied to clipboard!');
+        }
+    } catch (error) {
+        console.error('Error sharing summary:', error);
+        showError('Failed to share summary');
     }
 }
