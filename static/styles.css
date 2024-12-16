@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;700&display=swap');
+@import 'styles/dark-mode.css';
+@import 'styles/layout.css';
+@import 'styles/components.css';
+@import 'styles/responsive.css';
+@import 'styles/main.css';
+
+:root {
+    --primary-color: #4285F4;
+    --secondary-color: #FF0000;
+    --background-color: #FFFFFF;
+    --text-color: #333333;
+    --container-bg: #FFFFFF;
+    --accent-color: #FF0000;
+    --gradient-start: #4285F4;
+    --gradient-end: #64B5F6;
+}
+
+body {
+    font-family: 'Roboto', 'Open Sans', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 1px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+}

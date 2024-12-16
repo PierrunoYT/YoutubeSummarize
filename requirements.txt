@@ -1,0 +1,6 @@
+flask==3.0.0
+python-dotenv==1.0.0
+requests==2.31.0
+google-api-python-client==2.108.0
+youtube-transcript-api==0.6.1
+flask-limiter==3.5.0

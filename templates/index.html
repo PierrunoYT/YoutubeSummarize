@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoVoyager: YouTube Search and Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>VideoVoyager</h1>
+            <div class="dark-mode-toggle">
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                <label for="darkModeToggle" class="toggle-label">
+                    <div class="toggle-track">
+                        <div class="toggle-indicator">
+                            <svg class="toggle-icon">
+                                <use xlink:href="/static/icons.svg#sun-icon" class="sun-icon"></use>
+                                <use xlink:href="/static/icons.svg#moon-icon" class="moon-icon"></use>
+                            </svg>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div id="favorites-container">
+            <h2>Favorites</h2>
+            <div id="favorites-list"></div>
+        </div>
+        <div id="main-search">
+            <input type="text" id="main-video-url" placeholder="Paste YouTube URL here...">
+            <div class="main-buttons">
+                <button onclick="loadVideoAndThumbnail()" class="cta-button">Load Video</button>
+                <button onclick="summarizeVideo(false)" class="cta-button">Summarize Video</button>
+                <button onclick="startVideoChat()" class="cta-button">Start Chat</button>
+            </div>
+        </div>
+        <div class="two-column-layout">
+            <div class="left-column">
+                <div id="video-container">
+                    <h2>YouTube Search</h2>
+                    <textarea id="video-search" placeholder="Search for videos..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button onclick="searchVideos()">Search</button>
+                    <div id="video-results"></div>
+                </div>
+                <div id="video-player"></div>
+                <div id="video-thumbnail"></div>
+            </div>
+            <div class="right-column">
+                <div class="mode-switch">
+                    <button id="summary-btn" class="mode-btn active" onclick="switchMode('summary')">Summary</button>
+                    <button id="chat-btn" class="mode-btn" onclick="switchMode('chat')">Chat</button>
+                </div>
+                <div id="summary-container">
+                    <h2>YouTube Video Summary</h2>
+                    <button onclick="summarizeVideo(true)">Summarize in German</button>
+                    <div id="summary-result"></div>
+                    <div id="summary-progress" class="progress-bar"></div>
+                    <button onclick="shareSummary()" class="share-button">Share Summary</button>
+                </div>
+                <div id="video-chat-container" style="display: none;">
+                    <h2>Chat with YouTube Video</h2>
+                    <div id="chat-messages"></div>
+                    <textarea id="video-chat-question" placeholder="Ask a question about the video..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button onclick="askVideoQuestion(false)">Ask Question</button>
+                    <button onclick="askVideoQuestion(true)">Ask Question (German)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
